@@ -4,6 +4,13 @@ require_relative '../lib/relationizer/postgresql.rb'
 class PostgresqlTest < Test::Unit::TestCase
   include Relationizer::Postgresql
 
+  # Create relation as
+  #
+  #  id | name
+  # ----+------
+  #   1 | hoge
+  #   2 | fuga
+  #
   test "postgresql" do
     schema = { id: nil, name: nil }
     tuples = [[1, 'hoge'], [2, 'fuga']]
