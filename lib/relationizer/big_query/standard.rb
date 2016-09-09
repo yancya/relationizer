@@ -30,10 +30,16 @@ module Relationizer
           tuple.zip(types).
             map { |(col, type)| to_literal(col, type) }.
             join(", ").
-            tap { |t| break "(#{t})" }
+            tap { |t| break "(#{t}#{', NULL' if tuple.size == 1})" }
         }.join(", ").tap { |t| break "[#{t}]"}
 
-        "SELECT * FROM UNNEST(#{_types_exp}#{tuples_exp})"
+        select_exp = if schema.size == 1
+                       "#{schema.keys.first}"
+                     else
+                       '*'
+                     end
+
+        "SELECT #{select_exp} FROM UNNEST(#{_types_exp}#{tuples_exp})"
       end
 
       private
@@ -51,7 +57,7 @@ module Relationizer
       def types_exp(names, types)
         case names.length
         when 1
-          %Q{ARRAY<STRUCT<#{names.first} #{types.first}, ___dummy AS STRING>>}
+          %Q{ARRAY<STRUCT<#{names.first} #{types.first}, ___dummy STRING>>}
         else
           %Q{ARRAY<STRUCT<#{names.zip(types).map { |(name, type)| "#{name} #{type}" }.join(", ")}>>}
         end
