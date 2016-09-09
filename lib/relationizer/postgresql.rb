@@ -6,16 +6,16 @@ module Relationizer
     class ReasonlessTypeError < StandardError; end
 
     DEFAULT_TYPES = {
-      Integer    => :int8,
-      Fixnum     => :int8,
-      Bignum     => :decimal,
-      BigDecimal => :decimal,
-      Float      => :float8,
-      String     => :text,
-      TrueClass  => :boolean,
-      FalseClass => :boolean,
-      Date       => :date,
-      Time       => :timestamptz
+      Integer    => :INT8,
+      Fixnum     => :INT8,
+      Bignum     => :DECIMAL,
+      BigDecimal => :DECIMAL,
+      Float      => :FLOAT8,
+      String     => :TEXT,
+      TrueClass  => :BOOLEAN,
+      FalseClass => :BOOLEAN,
+      Date       => :DATE,
+      Time       => :TIMESTAMPTZ
     }
 
     def create_relation_literal(schema, tuples)
@@ -63,6 +63,8 @@ module Relationizer
     end
 
     def to_text_literal(obj)
+      return "NULL" if obj.nil?
+
       obj.to_s.gsub(/'/, "''").tap do |s|
         break "'#{s}'"
       end
