@@ -30,10 +30,10 @@ module Relationizer
           tuple.zip(types).
             map { |(col, type)| to_literal(col, type) }.
             join(", ").
-            tap { |t| break "(#{t}#{', NULL' if tuple.size == 1})" }
+            tap { |t| break "(#{t}#{', NULL' if tuple.one?})" }
         }.join(", ").tap { |t| break "[#{t}]"}
 
-        select_exp = if schema.size == 1
+        select_exp = if schema.one?
                        "#{schema.keys.first}"
                      else
                        '*'

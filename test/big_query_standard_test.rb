@@ -55,4 +55,14 @@ class BigQueryStandardTest < Test::Unit::TestCase
       %Q{[(1, '1999-02-11 12:00:33'), (2, '2000-01-15 17:45:11')])}
     )
   end
+
+  test "Single column relation" do
+    schema = { id: nil }
+    tuples = [[1], [2], [3]]
+    assert_equal(
+      create_relation_literal(schema, tuples),
+      %Q{SELECT id FROM UNNEST(ARRAY<STRUCT<id INT64, ___dummy STRING>>} +
+      %Q{[(1, NULL), (2, NULL), (3, NULL)])}
+    )
+  end
 end
