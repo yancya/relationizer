@@ -7,15 +7,14 @@ module Relationizer
 
     DEFAULT_TYPES = {
       Integer    => :INT8,
-      Fixnum     => :INT8,
-      Bignum     => :DECIMAL,
       BigDecimal => :DECIMAL,
       Float      => :FLOAT8,
       String     => :TEXT,
       TrueClass  => :BOOLEAN,
       FalseClass => :BOOLEAN,
       Date       => :DATE,
-      Time       => :TIMESTAMPTZ
+      Time       => :TIMESTAMPTZ,
+      DateTime   => :TIMESTAMPTZ
     }
 
     def create_relation_literal(schema, tuples)

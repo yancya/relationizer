@@ -8,8 +8,6 @@ module Relationizer
 
       DEFAULT_TYPES = {
         Integer    => :INT64,
-        Fixnum     => :INT64,
-        Bignum     => :INT64,
         BigDecimal => :FLOAT64,
         Float      => :FLOAT64,
         String     => :STRING,
