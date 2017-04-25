@@ -5,16 +5,29 @@ module Relationizer
   module Postgresql
     class ReasonlessTypeError < StandardError; end
 
-    DEFAULT_TYPES = {
-      Integer    => :INT8,
-      BigDecimal => :DECIMAL,
-      Float      => :FLOAT8,
-      String     => :TEXT,
-      TrueClass  => :BOOLEAN,
-      FalseClass => :BOOLEAN,
-      Date       => :DATE,
-      Time       => :TIMESTAMPTZ,
-      DateTime   => :TIMESTAMPTZ
+    DEFAULT_TYPES =  -> (obj) {
+      case obj
+      when Integer
+        :INT8
+      when BigDecimal
+        :DECIMAL
+      when Float
+        :FLOAT8
+      when String
+        :TEXT
+      when TrueClass
+        :BOOLEAN
+      when FalseClass
+        :BOOLEAN
+      when Time
+        :TIMESTAMPTZ
+      when DateTime
+        :TIMESTAMPTZ
+      when Date
+        :DATE
+      else
+        nil
+      end
     }
 
     def create_relation_literal(schema, tuples)
@@ -39,10 +52,9 @@ module Relationizer
         next "#{name}::#{type.to_s.upcase}" if type
 
         values.
-          map(&:class).uniq.
           map(&DEFAULT_TYPES).compact.uniq.
-          tap(&method(:many_candidate_check)).
           tap(&method(:empty_candidate_check)).
+          tap(&method(:many_candidate_check)).
           first.
           to_s.upcase.
           tap { |fixed_type| break "#{name}::#{fixed_type}" }

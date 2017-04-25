@@ -6,17 +6,23 @@ module Relationizer
     module Standard
       class ReasonlessTypeError < StandardError; end
 
-      DEFAULT_TYPES = {
-        Integer    => :INT64,
-        BigDecimal => :FLOAT64,
-        Float      => :FLOAT64,
-        String     => :STRING,
-        TrueClass  => :BOOL,
-        FalseClass => :BOOL,
-        Date       => :DATE,
-        Time       => :TIMESTAMP,
-        DateTime   => :TIMESTAMP,
-        Array      => :ARRAY
+      KNOWN_TYPES = [:INT64, :FLOAT64, :STRING, :BOOL, :TIMESTAMP, :DATE]
+
+      DEFAULT_TYPES = -> (obj) {
+        case obj
+        when Integer    then :INT64
+        when BigDecimal then :FLOAT64
+        when Float      then :FLOAT64
+        when String     then :STRING
+        when TrueClass  then :BOOL
+        when FalseClass then :BOOL
+        when Time       then :TIMESTAMP
+        when DateTime   then :TIMESTAMP
+        when Date       then :DATE
+        when Array      then :ARRAY
+        else
+          nil
+        end
       }
 
       def create_relation_literal(schema, tuples)
@@ -49,7 +55,7 @@ module Relationizer
           raise ReasonlessTypeError.new("Ambiguous type of element in array: #{classes}")
         end
 
-        DEFAULT_TYPES[classes.first] || :STRING
+        DEFAULT_TYPES[array.first] || :STRING
       end
 
       def types_exp(names, types)
@@ -76,16 +82,16 @@ module Relationizer
           if values.map { |o| o.is_a?(Array) }.all?
             types = values.
                       map(&method(:array_type)).uniq.
-                      tap(&method(:many_candidate_check)).
-                      tap(&method(:empty_candidate_check))
+                      tap(&method(:empty_candidate_check)).
+                      tap(&method(:many_candidate_check))
 
             next "ARRAY<#{types.first}>".to_sym
           end
 
-          values.map(&:class).uniq.
+          values.
             map(&DEFAULT_TYPES).compact.uniq.
-            tap(&method(:many_candidate_check)).
             tap(&method(:empty_candidate_check)).
+            tap(&method(:many_candidate_check)).
             first || :STRING
         }
       end
@@ -99,7 +105,7 @@ module Relationizer
           obj.map { |e| to_literal(e, t) }.join(', ').tap { |s| break "[#{s}]"}
         when /^ARRAY\<.+\>$/
           t = /^ARRAY\<(.+)\>$/.match(type).to_a&.dig(1).to_sym
-          raise "Unknown type: #{t}" unless DEFAULT_TYPES.values.include?(t)
+          raise "Unknown type: #{t}" unless KNOWN_TYPES.include?(t)
           obj.map { |e| to_literal(e, t) }.join(', ').tap { |s| break "[#{s}]"}
         when :TIMESTAMP
           %Q{'#{obj.strftime('%Y-%m-%d %H:%M:%S')}'}
