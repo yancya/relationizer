@@ -42,6 +42,11 @@ class BigQueryStandardTest < Test::Unit::TestCase
       [[1], [2], [3]],
       %Q{SELECT id FROM UNNEST(ARRAY<STRUCT<id INT64, ___dummy STRING>>} +
       %Q{[(1, NULL), (2, NULL), (3, NULL)])}
+    ],
+    "Set fixed types" => [
+      { id: nil, ratio: :FLOAT64 },
+      [[1, 1], [2, 3.14]],
+      %Q{SELECT * FROM UNNEST(ARRAY<STRUCT<id INT64, ratio FLOAT64>>[(1, 1), (2, 3.14)])}
     ]
   }
 

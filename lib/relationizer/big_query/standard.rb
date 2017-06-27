@@ -76,7 +76,7 @@ module Relationizer
       end
 
       def fixed_types(schema, tuples)
-        tuples.transpose.zip(schema.to_a).map { |(values, (_, type))|
+        tuples.transpose.zip(schema.to_a).map { |values, type|
           next type if type
 
           if values.map { |o| o.is_a?(Array) }.all?
