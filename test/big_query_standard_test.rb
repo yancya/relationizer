@@ -6,7 +6,7 @@ class BigQueryStandardTest < Test::Unit::TestCase
   include Relationizer::BigQuery::Standard
   using ToOneLine
 
-  TEST_CASES = {
+  NORMAL_TEST_CASES = {
     "BigQuery Standard SQL case 1" => [
       {
         id: nil,
@@ -128,8 +128,38 @@ class BigQueryStandardTest < Test::Unit::TestCase
     ]
   }
 
-  data(TEST_CASES)
-  test "Test" do |(schema, tuples, expected)|
+  data(NORMAL_TEST_CASES)
+  test "Normal" do |(schema, tuples, expected)|
     assert_equal(create_relation_literal(schema, tuples), expected)
+  end
+
+  test "Many candidate Error" do
+    assert_raise(ReasonlessTypeError) do
+      create_relation_literal(
+        {
+          id: nil,
+          name: nil
+        },
+        [
+          [1,   'Taro'],# id is Integer
+          ['2', 'Jiro'] # id is String
+        ]
+      )
+    end
+  end
+
+  test "Candidate nothing Error" do
+    assert_raise(ReasonlessTypeError) do
+      create_relation_literal(
+        {
+          id: nil,
+          name: nil
+        },
+        [
+          [1, Object.new], # Object can not apply auto typing
+          [2, Object.new]
+        ]
+      )
+    end
   end
 end
