@@ -34,7 +34,7 @@ module Relationizer
           tuple.zip(types).
             map { |(col, type)| to_literal(col, type) }.
             join(", ").
-            tap { |t| break "(#{t}#{', NULL' if tuple.one?})" }
+            tap { |t| break "(#{t}#{', NULL' if tuple.length == 1})" }
         }.join(", ").tap { |t| break "[#{t}]"}
 
         select_exp = if schema.one?
@@ -109,9 +109,16 @@ module Relationizer
           obj.map { |e| to_literal(e, t) }.join(', ').tap { |s| break "[#{s}]"}
         when :TIMESTAMP
           %Q{'#{obj.strftime('%Y-%m-%d %H:%M:%S')}'}
-        when :STRING, :DATE, :BOOL
+        when :STRING, :DATE
           obj.to_s.gsub(/'/, "\'").tap do |s|
             break "'#{s}'"
+          end
+        when :BOOL
+          case obj
+          when TrueClass, FalseClass
+            obj
+          else
+            !!obj
           end
         when :FLOAT64
           case obj
