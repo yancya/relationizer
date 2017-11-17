@@ -94,6 +94,23 @@ class BigQueryStandardTest < Test::Unit::TestCase
                        (2, '2000-01-15 17:45:11')])
       SQL
     ],
+    "BOOL column" => [
+      {
+        id: nil,
+        usable: nil
+      },
+      [
+        [1, true],
+        [2, false]
+      ],
+      <<~SQL.to_one_line
+        SELECT *
+          FROM UNNEST(ARRAY<STRUCT<id INT64,
+                                   usable BOOL>>
+                      [(1, true),
+                       (2, false)])
+      SQL
+    ],
     "Single column relation" => [
       { id: nil },
       [
@@ -124,6 +141,23 @@ class BigQueryStandardTest < Test::Unit::TestCase
                                    ratio FLOAT64>>
                       [(1, 1),
                        (2, 3.14)])
+      SQL
+    ],
+    "Set fixed types as BOOL" => [
+      {
+        id: nil,
+        ratio: :BOOL
+      },
+      [
+        [1, 1],
+        [2, false]
+      ],
+      <<~SQL.to_one_line
+        SELECT *
+          FROM UNNEST(ARRAY<STRUCT<id INT64,
+                                   ratio BOOL>>
+                      [(1, true),
+                       (2, false)])
       SQL
     ]
   }
