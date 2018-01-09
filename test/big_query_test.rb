@@ -1,9 +1,9 @@
 require 'test-unit'
-require_relative '../lib/relationizer/big_query/standard.rb'
+require_relative '../lib/relationizer/big_query.rb'
 require_relative './to_one_line.rb'
 
-class BigQueryStandardTest < Test::Unit::TestCase
-  include Relationizer::BigQuery::Standard
+class BigQueryTest < Test::Unit::TestCase
+  include Relationizer::BigQuery
   using ToOneLine
 
   NORMAL_TEST_CASES = {
