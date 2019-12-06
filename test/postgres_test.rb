@@ -5,6 +5,10 @@ require_relative '../lib/relationizer/postgresql.rb'
 class PostgresqlTest < Test::Unit::TestCase
   include Relationizer::Postgresql
 
+  setup do
+    ENV['TZ'] = 'JST'
+  end
+
   TEST_CASES = {
     "NULL" => [
       { id: nil },
