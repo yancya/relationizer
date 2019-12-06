@@ -38,13 +38,13 @@ class PostgresqlTest < Test::Unit::TestCase
     ],
     "Time" => [
       { time: nil },
-      [[Time.parse('2017-04-25 16:36:00 00:00:00 +0900')]],
+      [[Time.parse('2017-04-25 16:36:00+09:00')]],
       %Q{SELECT time::TIMESTAMPTZ FROM (VALUES('2017-04-25 16:36:00 +0900')) AS t("time")}
     ],
     "DateTime" => [
       { time: nil },
-      [[DateTime.parse('2017-04-25 16:36:00 00:00:00 +0900')]],
-      %Q{SELECT time::TIMESTAMPTZ FROM (VALUES('2017-04-25T16:36:00+00:00')) AS t("time")}
+      [[DateTime.parse('2017-04-25 16:36:00+09:00')]],
+      %Q{SELECT time::TIMESTAMPTZ FROM (VALUES('2017-04-25T16:36:00+09:00')) AS t("time")}
     ]
   }
 
