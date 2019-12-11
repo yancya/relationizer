@@ -1,5 +1,5 @@
 require 'test-unit'
-require_relative '../lib/relationizer/big_query.rb'
+require_relative '../lib/relationizer/big_query'
 require_relative './to_one_line.rb'
 
 class BigQueryTest < Test::Unit::TestCase

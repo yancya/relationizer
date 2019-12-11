@@ -1,6 +1,6 @@
 require 'test-unit'
 require 'time'
-require_relative '../lib/relationizer/postgresql.rb'
+require_relative '../lib/relationizer/postgresql'
 
 class PostgresqlTest < Test::Unit::TestCase
   include Relationizer::Postgresql
