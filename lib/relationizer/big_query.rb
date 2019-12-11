@@ -60,9 +60,9 @@ module Relationizer
     def types_exp(names, types)
       case names.length
       when 1
-        %Q{ARRAY<STRUCT<#{names.first} #{types.first}, ___dummy STRING>>}
+        %Q{ARRAY<STRUCT<`#{names.first}` #{types.first}, `___dummy` STRING>>}
       else
-        %Q{ARRAY<STRUCT<#{names.zip(types).map { |(name, type)| "#{name} #{type}" }.join(", ")}>>}
+        %Q{ARRAY<STRUCT<#{names.zip(types).map { |(name, type)| "`#{name}` #{type}" }.join(", ")}>>}
       end
     end
 
