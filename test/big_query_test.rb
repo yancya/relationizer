@@ -1,5 +1,5 @@
 require 'test-unit'
-require_relative '../lib/relationizer/big_query.rb'
+require_relative '../lib/relationizer/big_query'
 require_relative './to_one_line.rb'
 
 class BigQueryTest < Test::Unit::TestCase
@@ -18,8 +18,8 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   name STRING>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `name` STRING>>
                       [(1, 'hoge'),
                        (2, 'fuga')])
       SQL
@@ -36,9 +36,9 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   name STRING,
-                                   combination ARRAY<INT64>>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `name` STRING,
+                                   `combination` ARRAY<INT64>>>
                       [(1, 'hoge', [1, 2, 3]),
                        (2, 'fuga', [4, 5, 6])])
       SQL
@@ -54,8 +54,8 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   ratio FLOAT64>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `ratio` FLOAT64>>
                       [(1, 1.002),
                        (2, 3.14)])
       SQL
@@ -71,8 +71,8 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   birthday DATE>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `birthday` DATE>>
                       [(1, '1999-02-11'),
                        (2, '2000-01-15')])
       SQL
@@ -88,8 +88,8 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   created_at TIMESTAMP>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `created_at` TIMESTAMP>>
                       [(1, '1999-02-11 12:00:33'),
                        (2, '2000-01-15 17:45:11')])
       SQL
@@ -105,8 +105,8 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   usable BOOL>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `usable` BOOL>>
                       [(1, true),
                        (2, false)])
       SQL
@@ -119,8 +119,8 @@ class BigQueryTest < Test::Unit::TestCase
         [3]
       ],
       <<~SQL.to_one_line
-        SELECT id FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                           ___dummy STRING>>
+        SELECT id FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                           `___dummy` STRING>>
                               [(1, NULL),
                                (2, NULL),
                                (3, NULL)])
@@ -137,8 +137,8 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   ratio FLOAT64>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `ratio` FLOAT64>>
                       [(1, 1),
                        (2, 3.14)])
       SQL
@@ -154,8 +154,8 @@ class BigQueryTest < Test::Unit::TestCase
       ],
       <<~SQL.to_one_line
         SELECT *
-          FROM UNNEST(ARRAY<STRUCT<id INT64,
-                                   ratio BOOL>>
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `ratio` BOOL>>
                       [(1, true),
                        (2, false)])
       SQL
