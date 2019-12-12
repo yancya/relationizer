@@ -49,7 +49,7 @@ module Relationizer
 
     def select_exp(schema, tuples)
       tuples.transpose.zip(schema.to_a).map { |(values, (name, type))|
-        next "\"#{name}\"::#{type.to_s.upcase}" if type
+        next %Q{"#{name}"::#{type.to_s.upcase}} if type
 
         values.
           map(&DEFAULT_TYPES).compact.uniq.
@@ -57,7 +57,7 @@ module Relationizer
           tap(&method(:many_candidate_check)).
           first.
           to_s.upcase.
-          tap { |fixed_type| break "\"#{name}\"::#{fixed_type}" }
+          tap { |fixed_type| break %Q{"#{name}"::#{fixed_type}} }
       }.join(", ")
     end
 
