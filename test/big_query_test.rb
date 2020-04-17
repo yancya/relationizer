@@ -159,6 +159,17 @@ class BigQueryTest < Test::Unit::TestCase
                       [(1, true),
                        (2, false)])
       SQL
+    ],
+    "Empty tuples with types" => [
+      {
+        id: :INT64,
+        name: :STRING
+      },
+      [],
+      <<~SQL.to_one_line
+        SELECT *
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64, `name` STRING>>[])
+      SQL
     ]
   }
 
@@ -193,6 +204,18 @@ class BigQueryTest < Test::Unit::TestCase
           [1, Object.new], # Object can not apply auto typing
           [2, Object.new]
         ]
+      )
+    end
+  end
+
+  test "Type not found Error" do
+    assert_raise(TypeNotFoundError) do
+      create_relation_literal(
+        {
+          id: nil,
+          name: nil
+        },
+        []
       )
     end
   end
