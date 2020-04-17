@@ -4,6 +4,7 @@ require 'date'
 module Relationizer
   module BigQuery
     class ReasonlessTypeError < StandardError; end
+    class TypeNotFoundError < StandardError; end
 
     KNOWN_TYPES = [:INT64, :FLOAT64, :STRING, :BOOL, :TIMESTAMP, :DATE]
 
@@ -75,6 +76,11 @@ module Relationizer
     end
 
     def fixed_types(schema, tuples)
+      if tuples.empty?
+        raise TypeNotFoundError unless schema.all?
+        return schema
+      end
+
       tuples.transpose.zip(schema.to_a).map { |values, type|
         next type if type
 
