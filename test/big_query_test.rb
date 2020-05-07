@@ -160,6 +160,23 @@ class BigQueryTest < Test::Unit::TestCase
                        (2, false)])
       SQL
     ],
+    "Set fixed types as NUMERIC" => [
+      {
+        id: nil,
+        ratio: :NUMERIC
+      },
+      [
+        [1, 1],
+        [2, 1.08]
+      ],
+      <<~SQL.to_one_line
+        SELECT *
+          FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+                                   `ratio` NUMERIC>>
+                      [(1, 1),
+                       (2, 1.08)])
+      SQL
+    ],
     "Empty tuples with types" => [
       {
         id: :INT64,
