@@ -6,7 +6,7 @@ module Relationizer
     class ReasonlessTypeError < StandardError; end
     class TypeNotFoundError < StandardError; end
 
-    KNOWN_TYPES = [:INT64, :FLOAT64, :STRING, :BOOL, :TIMESTAMP, :DATE]
+    KNOWN_TYPES = [:INT64, :FLOAT64, :STRING, :BOOL, :TIMESTAMP, :DATE, :NUMERIC]
 
     DEFAULT_TYPES = -> (obj) {
       case obj
@@ -134,7 +134,7 @@ module Relationizer
         else
           obj
         end
-      when :INT64
+      when :INT64, :NUMERIC
         obj.to_s
       else
         raise "Unknown type: #{type}"
