@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write  # Required for Trusted Publisher
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Build gem
+        run: gem build relationizer.gemspec
+
+      - name: Push to RubyGems (Trusted Publisher)
+        uses: rubygems/release-gem@v1
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: relationizer-*.gem
+          generate_release_notes: true
