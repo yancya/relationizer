@@ -119,7 +119,7 @@ module Relationizer
       when :TIMESTAMP
         %Q{'#{obj.strftime('%Y-%m-%d %H:%M:%S')}'}
       when :STRING, :DATE
-        obj.to_s.gsub(/'/, "\'").tap do |s|
+        obj.to_s.gsub('\\') { '\\\\' }.gsub("'") { "\\'" }.tap do |s|
           break "'#{s}'"
         end
       when :BOOL

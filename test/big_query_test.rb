@@ -250,4 +250,11 @@ class BigQueryTest < Test::Unit::TestCase
       create_relation_literal({ 'i`d' => nil }, [[1], [2]])
     )
   end
+
+  test "String value containing a single quote" do
+    assert_equal(
+      %Q{SELECT * FROM UNNEST(ARRAY<STRUCT<`id` INT64, `name` STRING>>[(1, 'it\\'s'), (2, 'O\\'Reilly')])},
+      create_relation_literal({ id: nil, name: nil }, [[1, "it's"], [2, "O'Reilly"]])
+    )
+  end
 end
