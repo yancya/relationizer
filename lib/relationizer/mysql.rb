@@ -92,12 +92,26 @@ module Relationizer
     end
 
     def identifier_quote(name)
-      "`#{name}`"
+      "`#{name.to_s.gsub('`', '``')}`"
+    end
+
+    SAFE_PATH_MEMBER = /\A[A-Za-z_$][A-Za-z0-9_$]*\z/
+
+    def path_literal(name)
+      member = name.to_s
+      path = if member =~ SAFE_PATH_MEMBER
+               "$.#{member}"
+             else
+               escaped_member = member.gsub('\\') { '\\\\' }.gsub('"') { '\\"' }
+               %Q{$."#{escaped_member}"}
+             end
+      sql_escaped = path.gsub('\\') { '\\\\' }.gsub('"') { '\\"' }
+      %["#{sql_escaped}"]
     end
 
     def to_columns_clause(names, types)
       names.zip(types).map { |name, type|
-        %[#{identifier_quote(name)} #{type} PATH "$.#{name}"]
+        %[#{identifier_quote(name)} #{type} PATH #{path_literal(name)}]
       }.join(', ')
     end
   end

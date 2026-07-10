@@ -236,4 +236,11 @@ class BigQueryTest < Test::Unit::TestCase
       )
     end
   end
+
+  test "Column name containing a backtick" do
+    assert_equal(
+      %Q{SELECT * FROM UNNEST(ARRAY<STRUCT<`i\\`d` INT64, `x` STRING>>[(1, 'a')])},
+      create_relation_literal({ 'i`d' => nil, x: nil }, [[1, 'a']])
+    )
+  end
 end

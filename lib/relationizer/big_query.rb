@@ -61,10 +61,14 @@ module Relationizer
     def types_exp(names, types)
       case names.length
       when 1
-        %Q{ARRAY<STRUCT<`#{names.first}` #{types.first}, `___dummy` STRING>>}
+        %Q{ARRAY<STRUCT<#{identifier_quote(names.first)} #{types.first}, `___dummy` STRING>>}
       else
-        %Q{ARRAY<STRUCT<#{names.zip(types).map { |(name, type)| "`#{name}` #{type}" }.join(", ")}>>}
+        %Q{ARRAY<STRUCT<#{names.zip(types).map { |(name, type)| "#{identifier_quote(name)} #{type}" }.join(", ")}>>}
       end
+    end
+
+    def identifier_quote(name)
+      "`#{name.to_s.gsub('\\', '\\\\\\\\').gsub('`', '\\\\`')}`"
     end
 
     def many_candidate_check(types)

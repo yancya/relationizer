@@ -138,4 +138,25 @@ class MySQLTest < Test::Unit::TestCase
       )
     end
   end
+
+  test "Column name containing a backtick" do
+    assert_equal(
+      '(SELECT * FROM JSON_TABLE(\'[{"i`d":1}]\', "$[*]" COLUMNS(`i``d` BIGINT PATH "$.\"i`d\"")) AS t)',
+      create_relation_literal({ 'i`d' => nil }, [[1]])
+    )
+  end
+
+  test "Column name containing a dot" do
+    assert_equal(
+      '(SELECT * FROM JSON_TABLE(\'[{"a.b":1}]\', "$[*]" COLUMNS(`a.b` BIGINT PATH "$.\"a.b\"")) AS t)',
+      create_relation_literal({ 'a.b' => nil }, [[1]])
+    )
+  end
+
+  test "Column name containing a double quote" do
+    assert_equal(
+      "(SELECT * FROM JSON_TABLE('[{\"a\\\\\"b\":1}]', \"$[*]\" COLUMNS(`a\"b` BIGINT PATH \"$.\\\"a\\\\\\\"b\\\"\")) AS t)",
+      create_relation_literal({ 'a"b' => nil }, [[1]])
+    )
+  end
 end
