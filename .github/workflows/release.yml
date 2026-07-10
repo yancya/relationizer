@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*'
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -25,10 +29,23 @@ jobs:
       - name: Build gem
         run: gem build relationizer.gemspec
 
+      - name: Check if version is already published
+        id: check
+        run: |
+          version="$(ruby -Ilib -e 'require "relationizer/version"; puts Relationizer::VERSION')"
+          if gem list --remote --exact relationizer --all | grep -qE "\(.*\b${version}\b.*\)"; then
+            echo "Version ${version} is already on RubyGems; skipping publish."
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Push to RubyGems (Trusted Publisher)
+        if: steps.check.outputs.already_published != 'true'
         uses: rubygems/release-gem@v1
 
       - name: Create GitHub Release
+        if: steps.check.outputs.already_published != 'true'
         uses: softprops/action-gh-release@v1
         with:
           files: relationizer-*.gem
