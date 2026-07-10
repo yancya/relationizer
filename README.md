@@ -1,6 +1,6 @@
 # Relationizer
 
-A Ruby gem that converts `Array<Array>` into SQL relation literals. Supports BigQuery and PostgreSQL.
+A Ruby gem that converts `Array<Array>` into SQL relation literals. Supports BigQuery, PostgreSQL, and MySQL 8.0.
 
 ## Installation
 
@@ -133,10 +133,46 @@ q.create_relation_literal(
 #=> %Q{SELECT "id"::INT8 FROM (VALUES('1'), (NULL)) AS t("id")}
 ```
 
+### MySQL 8.0
+
+```ruby
+require 'relationizer/mysql'
+
+class MyQuery
+  include Relationizer::MySQL
+end
+
+q = MyQuery.new
+
+q.create_relation_literal(
+  { id: nil, name: nil },
+  [[1, 'hoge'], [2, 'fuga']]
+)
+#=> %Q{(SELECT * FROM JSON_TABLE('[{"id":1,"name":"hoge"},{"id":2,"name":"fuga"}]', "$[*]" COLUMNS(`id` BIGINT PATH "$.id", `name` TEXT PATH "$.name")) AS t)}
+```
+
+#### Auto type inference
+
+| Ruby type             | MySQL type      |
+|-----------------------|------------------|
+| `Integer`              | BIGINT          |
+| `BigDecimal`           | DECIMAL(65,30)  |
+| `Float`                | DOUBLE          |
+| `String`               | TEXT            |
+| `TrueClass` / `FalseClass` | BOOLEAN     |
+| `Time` / `DateTime`    | DATETIME        |
+| `Date`                 | DATE            |
+
+#### Implementation notes
+
+The MySQL backend builds the relation from a JSON document passed through `JSON_TABLE()` (see `to_json_document` in `lib/relationizer/mysql.rb`), rather than a `VALUES` list. This is how array-of-struct tuples become a queryable relation on MySQL 8.0+, which lacks a `JSON_TABLE`-free equivalent of BigQuery's `UNNEST` or PostgreSQL's `VALUES`.
+
+Like the other backends, it raises `ReasonlessTypeError` when a column's values don't share a single inferred type, and `TypeNotFoundError` when tuples are empty and a type isn't manually specified.
+
 ## Errors
 
 - `ReasonlessTypeError` — Raised when types are mixed within a single column (e.g. Integer and String in the same column)
-- `TypeNotFoundError` (BigQuery only) — Raised when tuples are empty and types are not manually specified
+- `TypeNotFoundError` (BigQuery and MySQL) — Raised when tuples are empty and types are not manually specified
 
 ## License
 
