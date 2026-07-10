@@ -4,6 +4,7 @@ require 'date'
 module Relationizer
   module Postgresql
     class ReasonlessTypeError < StandardError; end
+    class TypeNotFoundError < StandardError; end
 
     DEFAULT_TYPES =  -> (obj) {
       case obj
@@ -31,6 +32,8 @@ module Relationizer
     }
 
     def create_relation_literal(schema, tuples)
+      return empty_relation_literal(schema) if tuples.empty?
+
       _select_exp = select_exp(schema, tuples)
 
       tuples_exp = tuples.map { |tuple|
@@ -46,6 +49,19 @@ module Relationizer
     end
 
     private
+
+    def empty_relation_literal(schema)
+      raise TypeNotFoundError unless schema.values.all?
+
+      select_exp = schema.map { |name, type|
+        "#{identifer_quote(name)}::#{type.to_s.upcase}"
+      }.join(", ")
+
+      values_exp = schema.size.times.map { "NULL" }.join(", ")
+      schema_exp = schema.keys.map(&method(:identifer_quote)).join(", ")
+
+      "SELECT #{select_exp} FROM (VALUES(#{values_exp})) AS t(#{schema_exp}) WHERE FALSE"
+    end
 
     def select_exp(schema, tuples)
       tuples.transpose.zip(schema.to_a).map { |(values, (name, type))|

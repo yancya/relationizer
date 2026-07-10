@@ -133,6 +133,18 @@ q.create_relation_literal(
 #=> %Q{SELECT "id"::INT8 FROM (VALUES('1'), (NULL)) AS t("id")}
 ```
 
+#### Empty tuples
+
+PostgreSQL has no zero-row `VALUES` literal, so an empty relation is expressed as `WHERE FALSE` (manual type specification is required, same as BigQuery/MySQL).
+
+```ruby
+q.create_relation_literal(
+  { id: :INT8, name: :TEXT },
+  []
+)
+#=> %Q{SELECT "id"::INT8, "name"::TEXT FROM (VALUES(NULL, NULL)) AS t("id", "name") WHERE FALSE}
+```
+
 ### MySQL 8.0
 
 ```ruby
@@ -172,7 +184,7 @@ Like the other backends, it raises `ReasonlessTypeError` when a column's values 
 ## Errors
 
 - `ReasonlessTypeError` — Raised when types are mixed within a single column (e.g. Integer and String in the same column)
-- `TypeNotFoundError` (BigQuery and MySQL) — Raised when tuples are empty and types are not manually specified
+- `TypeNotFoundError` — Raised when tuples are empty and types are not manually specified
 
 ## License
 

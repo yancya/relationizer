@@ -52,4 +52,36 @@ class PostgresqlTest < Test::Unit::TestCase
   test "Auto cast test" do |(schema, tuples, expected)|
     assert_equal(create_relation_literal(schema, tuples), expected)
   end
+
+  test "Empty tuples with types" do
+    assert_equal(
+      %Q{SELECT "id"::INT8, "name"::TEXT FROM (VALUES(NULL, NULL)) AS t("id", "name") WHERE FALSE},
+      create_relation_literal({ id: :INT8, name: :TEXT }, [])
+    )
+  end
+
+  test "Empty tuples with a single column" do
+    assert_equal(
+      %Q{SELECT "id"::INT8 FROM (VALUES(NULL)) AS t("id") WHERE FALSE},
+      create_relation_literal({ id: :INT8 }, [])
+    )
+  end
+
+  test "Type not found Error (empty tuples without types)" do
+    assert_raise(Relationizer::Postgresql::TypeNotFoundError) do
+      create_relation_literal({ id: nil, name: nil }, [])
+    end
+  end
+
+  test "Many candidate Error" do
+    assert_raise(Relationizer::Postgresql::ReasonlessTypeError) do
+      create_relation_literal({ id: nil }, [[1], ['2']])
+    end
+  end
+
+  test "Candidate nothing Error" do
+    assert_raise(Relationizer::Postgresql::ReasonlessTypeError) do
+      create_relation_literal({ id: nil }, [[Object.new], [Object.new]])
+    end
+  end
 end
