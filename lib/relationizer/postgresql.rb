@@ -43,7 +43,7 @@ module Relationizer
           tap { |t| break "(#{t})" }
       }.join(", ")
 
-      schema_exp = schema.keys.map(&method(:identifer_quote)).join(", ")
+      schema_exp = schema.keys.map(&method(:identifier_quote)).join(", ")
 
       "SELECT #{_select_exp} FROM (VALUES#{tuples_exp}) AS t(#{schema_exp})"
     end
@@ -54,18 +54,18 @@ module Relationizer
       raise TypeNotFoundError unless schema.values.all?
 
       select_exp = schema.map { |name, type|
-        "#{identifer_quote(name)}::#{type.to_s.upcase}"
+        "#{identifier_quote(name)}::#{type.to_s.upcase}"
       }.join(", ")
 
       values_exp = schema.size.times.map { "NULL" }.join(", ")
-      schema_exp = schema.keys.map(&method(:identifer_quote)).join(", ")
+      schema_exp = schema.keys.map(&method(:identifier_quote)).join(", ")
 
       "SELECT #{select_exp} FROM (VALUES(#{values_exp})) AS t(#{schema_exp}) WHERE FALSE"
     end
 
     def select_exp(schema, tuples)
       tuples.transpose.zip(schema.to_a).map { |(values, (name, type))|
-        next %Q{"#{name}"::#{type.to_s.upcase}} if type
+        next "#{identifier_quote(name)}::#{type.to_s.upcase}" if type
 
         values.
           map(&DEFAULT_TYPES).compact.uniq.
@@ -73,7 +73,7 @@ module Relationizer
           tap(&method(:many_candidate_check)).
           first.
           to_s.upcase.
-          tap { |fixed_type| break %Q{"#{name}"::#{fixed_type}} }
+          tap { |fixed_type| break "#{identifier_quote(name)}::#{fixed_type}" }
       }.join(", ")
     end
 
@@ -85,7 +85,7 @@ module Relationizer
       raise ReasonlessTypeError.new("Candidate nothing") if types.empty?
     end
 
-    def identifer_quote(w)
+    def identifier_quote(w)
       %Q{"#{w.to_s.gsub(/"/, '""')}"}
     end
 

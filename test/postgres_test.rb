@@ -84,4 +84,18 @@ class PostgresqlTest < Test::Unit::TestCase
       create_relation_literal({ id: nil }, [[Object.new], [Object.new]])
     end
   end
+
+  test "Column name containing a double quote" do
+    assert_equal(
+      %Q{SELECT "i""d"::INT8 FROM (VALUES('1')) AS t("i""d")},
+      create_relation_literal({ %Q{i"d} => nil }, [[1]])
+    )
+  end
+
+  test "Column name containing a double quote with empty tuples" do
+    assert_equal(
+      %Q{SELECT "i""d"::INT8 FROM (VALUES(NULL)) AS t("i""d") WHERE FALSE},
+      create_relation_literal({ %Q{i"d} => :INT8 }, [])
+    )
+  end
 end
