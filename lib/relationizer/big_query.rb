@@ -38,7 +38,7 @@ module Relationizer
       }.join(", ").tap { |t| break "[#{t}]"}
 
       select_exp = if schema.one?
-                      "#{schema.keys.first}"
+                      identifier_quote(schema.keys.first)
                     else
                       '*'
                     end

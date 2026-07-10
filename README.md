@@ -88,7 +88,7 @@ q.create_relation_literal(
   { id: nil },
   [[1], [2], [3]]
 )
-#=> "SELECT id FROM UNNEST(ARRAY<STRUCT<`id` INT64, `___dummy` STRING>>[(1, NULL), (2, NULL), (3, NULL)])"
+#=> "SELECT `id` FROM UNNEST(ARRAY<STRUCT<`id` INT64, `___dummy` STRING>>[(1, NULL), (2, NULL), (3, NULL)])"
 ```
 
 ### PostgreSQL

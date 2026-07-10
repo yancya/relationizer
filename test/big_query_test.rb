@@ -119,7 +119,7 @@ class BigQueryTest < Test::Unit::TestCase
         [3]
       ],
       <<~SQL.to_one_line
-        SELECT id FROM UNNEST(ARRAY<STRUCT<`id` INT64,
+        SELECT `id` FROM UNNEST(ARRAY<STRUCT<`id` INT64,
                                            `___dummy` STRING>>
                               [(1, NULL),
                                (2, NULL),
@@ -241,6 +241,13 @@ class BigQueryTest < Test::Unit::TestCase
     assert_equal(
       %Q{SELECT * FROM UNNEST(ARRAY<STRUCT<`i\\`d` INT64, `x` STRING>>[(1, 'a')])},
       create_relation_literal({ 'i`d' => nil, x: nil }, [[1, 'a']])
+    )
+  end
+
+  test "Single column with a backtick in the name" do
+    assert_equal(
+      %Q{SELECT `i\\`d` FROM UNNEST(ARRAY<STRUCT<`i\\`d` INT64, `___dummy` STRING>>[(1, NULL), (2, NULL)])},
+      create_relation_literal({ 'i`d' => nil }, [[1], [2]])
     )
   end
 end
