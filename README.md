@@ -186,6 +186,19 @@ Like the other backends, it raises `ReasonlessTypeError` when a column's values 
 - `ReasonlessTypeError` — Raised when types are mixed within a single column (e.g. Integer and String in the same column)
 - `TypeNotFoundError` — Raised when tuples are empty and types are not manually specified
 
+## Cross-backend edge-case behavior
+
+`test/consistency_test.rb` pins down the following behaviors across all three backends:
+
+- `nil` in a tuple always renders as SQL `NULL` (MySQL round-trips it through a JSON `null` first)
+- A column of only `nil`s with no manual type, mixed types in a column, and empty tuples with no manual type all raise the same errors on every backend
+- A column name containing the backend's own identifier delimiter (`` ` `` for BigQuery/MySQL, `"` for PostgreSQL), or a string value containing a single quote, is escaped rather than producing broken SQL
+
+Documented, intentional divergences:
+
+- `Float::INFINITY` / `Float::NAN` — PostgreSQL's `FLOAT8` has literal support (`'Infinity'`, `'NaN'`); BigQuery's `FLOAT64` uses `CAST('inf' AS FLOAT64)`; MySQL's `DOUBLE` has no representation for either, so the MySQL backend raises `ReasonlessTypeError` instead
+- `BigDecimal` precision — PostgreSQL's `DECIMAL` and MySQL's `DECIMAL(65,30)` are exact types and preserve full precision; BigQuery's *default* inferred type for `BigDecimal` is the lossy binary `FLOAT64` (use the `NUMERIC` manual type override for exact precision on BigQuery)
+
 ## License
 
 [MIT License](http://opensource.org/licenses/MIT)
