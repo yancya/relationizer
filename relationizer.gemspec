@@ -10,8 +10,17 @@ Gem::Specification.new do |spec|
   spec.email         = ["yancya@upec.jp"]
 
   spec.summary       = %q{Array<Array> to Relation ppoi String}
+  spec.description   = %q{Converts Array<Array> tuples into SQL relation literals for BigQuery, PostgreSQL, and MySQL 8.0.}
   spec.homepage      = "https://github.com/yancya/relationizer"
   spec.license       = "MIT"
+  spec.required_ruby_version = ">= 3.2"
+
+  spec.metadata = {
+    "homepage_uri"      => spec.homepage,
+    "source_code_uri"   => spec.homepage,
+    "changelog_uri"     => "#{spec.homepage}/blob/master/CHANGELOG.md",
+    "rubygems_mfa_required" => "true",
+  }
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
