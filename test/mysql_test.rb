@@ -153,6 +153,24 @@ class MySQLTest < Test::Unit::TestCase
     )
   end
 
+  test "Infinity Error" do
+    assert_raise(Relationizer::MySQL::ReasonlessTypeError) do
+      create_relation_literal({ r: nil }, [[Float::INFINITY]])
+    end
+  end
+
+  test "Negative Infinity Error" do
+    assert_raise(Relationizer::MySQL::ReasonlessTypeError) do
+      create_relation_literal({ r: nil }, [[-Float::INFINITY]])
+    end
+  end
+
+  test "NaN Error" do
+    assert_raise(Relationizer::MySQL::ReasonlessTypeError) do
+      create_relation_literal({ r: nil }, [[Float::NAN]])
+    end
+  end
+
   test "Column name containing a double quote" do
     assert_equal(
       "(SELECT * FROM JSON_TABLE('[{\"a\\\\\"b\":1}]', \"$[*]\" COLUMNS(`a\"b` BIGINT PATH \"$.\\\"a\\\\\\\"b\\\"\")) AS t)",

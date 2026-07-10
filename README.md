@@ -179,7 +179,7 @@ q.create_relation_literal(
 
 The MySQL backend builds the relation from a JSON document passed through `JSON_TABLE()` (see `to_json_document` in `lib/relationizer/mysql.rb`), rather than a `VALUES` list. This is how array-of-struct tuples become a queryable relation on MySQL 8.0+, which lacks a `JSON_TABLE`-free equivalent of BigQuery's `UNNEST` or PostgreSQL's `VALUES`.
 
-Like the other backends, it raises `ReasonlessTypeError` when a column's values don't share a single inferred type, and `TypeNotFoundError` when tuples are empty and a type isn't manually specified.
+Like the other backends, it raises `ReasonlessTypeError` when a column's values don't share a single inferred type, and `TypeNotFoundError` when tuples are empty and a type isn't manually specified. `Float::INFINITY`, `-Float::INFINITY`, and `Float::NAN` also raise `ReasonlessTypeError` for `DOUBLE` columns, since MySQL's `DOUBLE` type has no literal for them.
 
 ## Errors
 

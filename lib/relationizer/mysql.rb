@@ -71,6 +71,11 @@ module Relationizer
         obj.strftime('%Y-%m-%d')
       when :DATETIME
         obj.strftime('%Y-%m-%d %H:%M:%S')
+      when :DOUBLE
+        if obj.is_a?(Float) && !obj.finite?
+          raise ReasonlessTypeError.new("MySQL DOUBLE cannot represent #{obj}")
+        end
+        obj
       else
         obj
       end
